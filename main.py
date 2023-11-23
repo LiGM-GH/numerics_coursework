@@ -42,12 +42,11 @@ h_x = (x_end - x_start) / x_steps
 h_y = (y_end - y_start) / y_steps
 h_t = (t_end - t_start) / t_steps
 
-matrix = np.full((x_steps + 1, y_steps + 1, t_steps + 1), 0.0)
 next_matrix = np.full((x_steps + 1, y_steps + 1, t_steps + 1), 0.0)
 
 C1 = h_x**2 * h_y**2
 C2 = -(h_y**2) * h_t**2
-C3 = -(h_y**2) * h_t**2
+C3 = -(h_x**2) * h_t**2
 C4 = h_x**2 * h_y**2 * h_t**2
 C0 = -2 * (C1 + C2 + C3)
 
@@ -64,8 +63,8 @@ def next_layer(k: int, matrix):
             # print(f"matrix[{i=}, {j=}, {k+1=}] = {matrix[i, j, k + 1]}")
 
 
-for i in range(0, x_steps + 1):
-    for j in range(1, y_steps + 1):
+for i in range(1, x_steps):
+    for j in range(1, y_steps):
         next_matrix[i, j, 0] = phi(h_x * i, h_y * j)
         next_matrix[i, j, 1] = next_matrix[i, j, 0] + psi(h_x * i, h_y * j) * h_t
 
