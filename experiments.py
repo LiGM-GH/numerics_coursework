@@ -70,6 +70,8 @@ for i in range(1, n):
     for j in range(1, n):
         matrix[0][i][j] = phi(j * hx, i * hy)
         matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
+show_plot(matrix[0])
+show_plot(matrix[1])
 
 for k in range(2, t_steps):
     matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k)
