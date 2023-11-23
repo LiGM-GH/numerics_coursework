@@ -15,37 +15,37 @@ def psi(x, y):
     return 1
 
 
-def method_step(u0, u1, f, k):
+def method_step(prev_matrix, curr_matrix, f, k):
     C1 = hx**2 * hy**2
     C2 = -(ht**2) * hy**2
     C3 = -(ht**2) * hx**2
     C4 = ht**2 * hx**2 * hy**2
     C0 = -2 * (C1 + C2 + C3)
-    u2 = np.zeros(u0.shape)
-    for i in range(1, u2.shape[0] - 1):
-        for j in range(1, u2.shape[1] - 1):
-            u2[i][j] = (
-                -u0[i][j]
+    next_matrix = np.zeros(prev_matrix.shape)
+    for i in range(1, next_matrix.shape[0] - 1):
+        for j in range(1, next_matrix.shape[1] - 1):
+            next_matrix[i][j] = (
+                -prev_matrix[i][j]
                 - (
-                    C0 * u1[i][j]
-                    + C2 * (u1[i + 1][j] + u1[i - 1][j])
-                    + C3 * (u1[i][j + 1] + u1[i][j - 1])
+                    C0 * curr_matrix[i][j]
+                    + C2 * (curr_matrix[i + 1][j] + curr_matrix[i - 1][j])
+                    + C3 * (curr_matrix[i][j + 1] + curr_matrix[i][j - 1])
                     - C4 * f(j * hx, i * hy, (k - 1) * ht)
                 )
                 / C1
             )
-    return u2
+    return next_matrix
 
 
-def show_plot(u_numeric):
+def show_plot(matrix_to_show):
     fig = plt.figure()
     ax = fig.add_subplot(projection="3d")
     ax.set_zlim(-1, 1)
     x, y = np.meshgrid(
-        np.linspace(0, a, u_numeric.shape[0], endpoint=True),
-        np.linspace(0, b, u_numeric.shape[1], endpoint=True),
+        np.linspace(0, a, matrix_to_show.shape[0], endpoint=True),
+        np.linspace(0, b, matrix_to_show.shape[1], endpoint=True),
     )
-    ax.plot_surface(x, y, u_numeric, cmap="inferno", rstride=1, cstride=1)
+    ax.plot_surface(x, y, matrix_to_show, cmap="inferno", rstride=1, cstride=1)
     plt.show()
     return 0
 
@@ -65,12 +65,12 @@ y = np.linspace(0, b, n + 1, endpoint=True)
 x, y = np.meshgrid(x, y)
 hx = a / n
 hy = b / n
-u0 = np.zeros((frn, n + 1, n + 1))
+matrix = np.zeros((frn, n + 1, n + 1))
 for i in range(1, n):
     for j in range(1, n):
-        u0[0][i][j] = phi(j * hx, i * hy)
-        u0[1][i][j] = ht * psi(j * hx, i * hy) + u0[0][i][j]
+        matrix[0][i][j] = phi(j * hx, i * hy)
+        matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
 
 for k in range(2, frn):
-    u0[k] = method_step(u0[k - 2], u0[k - 1], f, k)
-    show_plot(u0[k])
+    matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k)
+    show_plot(matrix[k])
