@@ -15,7 +15,7 @@ def psi(x, y):
     return 1
 
 
-def scheme(u0, u1, f, k):
+def method_step(u0, u1, f, k):
     C1 = hx**2 * hy**2
     C2 = -(ht**2) * hy**2
     C3 = -(ht**2) * hx**2
@@ -72,5 +72,5 @@ for i in range(1, n):
         u0[1][i][j] = ht * psi(j * hx, i * hy) + u0[0][i][j]
 
 for k in range(2, frn):
-    u0[k] = scheme(u0[k - 2], u0[k - 1], f, k)
+    u0[k] = method_step(u0[k - 2], u0[k - 1], f, k)
     show_plot(u0[k])
