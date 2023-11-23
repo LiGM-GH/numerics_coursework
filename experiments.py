@@ -58,19 +58,19 @@ b = 2
 n = 10
 
 fps = int(1 / ht)
-frn = int(pi * 2 * fps)
+t_steps = int(pi * 2 * fps)
 
 x = np.linspace(0, a, n + 1, endpoint=True)
 y = np.linspace(0, b, n + 1, endpoint=True)
 x, y = np.meshgrid(x, y)
 hx = a / n
 hy = b / n
-matrix = np.zeros((frn, n + 1, n + 1))
+matrix = np.zeros((t_steps, n + 1, n + 1))
 for i in range(1, n):
     for j in range(1, n):
         matrix[0][i][j] = phi(j * hx, i * hy)
         matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
 
-for k in range(2, frn):
+for k in range(2, t_steps):
     matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k)
     show_plot(matrix[k])
