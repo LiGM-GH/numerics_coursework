@@ -17,12 +17,12 @@ t_steps = int(pi * 2 * fps)
 
 def f(x, y, t):
     global l
-    return sin(pi * x / l) * sin(pi * y / l) * sin(pi * t / l)
+    return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l) * sin(pi * t / l)
 
 
 def psi(x, y):
     global l
-    return pi / l * np.sin(np.pi * x / l) * np.sin(np.pi * y / l)
+    return pi / l * sin(pi * x / l) * sin(pi * y / l)
 
 
 def phi(x, y):
@@ -68,11 +68,18 @@ x, y = np.meshgrid(x, y)
 h_x = a / n
 h_y = b / n
 matrix = np.zeros((t_steps, n + 1, n + 1))
+
 for i in range(1, n):
     for j in range(1, n):
         matrix[0][i][j] = phi(j * h_x, i * h_y)
         matrix[1][i][j] = h_t * psi(j * h_x, i * h_y) + matrix[0][i][j]
 
+print(matrix[0])
+print()
+
+print(matrix[1])
+print()
+
 for k in range(2, t_steps):
     matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k)
-    show_plot(matrix[k])
+    # show_plot(matrix[k])
