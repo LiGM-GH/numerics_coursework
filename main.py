@@ -25,7 +25,7 @@ def psi(x, y):
 
 x_steps = 10
 y_steps = 10
-t_steps = 10
+t_steps = 40
 
 a = 1.0
 b = 1.0

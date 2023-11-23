@@ -2,84 +2,75 @@ import numpy as np
 from numpy import sin, pi
 import matplotlib.pyplot as plt
 
-l = 1.0
-
-h_t = 0.1
-h_x = 0.1
-h_y = 0.1
-a = 2
-b = 2
-n = 10
-
-fps = int(1 / h_t)
-t_steps = int(pi * 2 * fps)
-
 
 def f(x, y, t):
-    global l
-    return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l) * sin(pi * t / l)
-
-
-def psi(x, y):
-    global l
-    return pi / l * sin(pi * x / l) * sin(pi * y / l)
+    return -sin(t)
 
 
 def phi(x, y):
     return 0
 
 
-C1 = h_x**2 * h_y**2
-C2 = -(h_t**2) * h_y**2
-C3 = -(h_t**2) * h_x**2
-C4 = h_t**2 * h_x**2 * h_y**2
-C0 = -2 * (C1 + C2 + C3)
+def psi(x, y):
+    return 1
 
 
-def method_step(prev_matrix, curr_matrix, f, k):
-    next_matrix = np.zeros(prev_matrix.shape)
-    for i in range(1, next_matrix.shape[0] - 1):
-        for j in range(1, next_matrix.shape[1] - 1):
-            next_matrix[i][j] = -prev_matrix[i][j] - 1.0 / C1 * (
-                C0 * curr_matrix[i][j]
-                + C2 * (curr_matrix[i + 1][j] + curr_matrix[i - 1][j])
-                + C3 * (curr_matrix[i][j + 1] + curr_matrix[i][j - 1])
-                - C4 * f(j * h_x, i * h_y, (k - 1) * h_t)
+def scheme(u0, u1, f, k):
+    C1 = hx**2 * hy**2
+    C2 = -(ht**2) * hy**2
+    C3 = -(ht**2) * hx**2
+    C4 = ht**2 * hx**2 * hy**2
+    C0 = -2 * (C1 + C2 + C3)
+    u2 = np.zeros(u0.shape)
+    for i in range(1, u2.shape[0] - 1):
+        for j in range(1, u2.shape[1] - 1):
+            u2[i][j] = (
+                -u0[i][j]
+                - (
+                    C0 * u1[i][j]
+                    + C2 * (u1[i + 1][j] + u1[i - 1][j])
+                    + C3 * (u1[i][j + 1] + u1[i][j - 1])
+                    - C4 * f(j * hx, i * hy, (k - 1) * ht)
+                )
+                / C1
             )
-    return next_matrix
+    return u2
 
 
-def show_plot(matrix):
+def show_plot(u_numeric):
     fig = plt.figure()
     ax = fig.add_subplot(projection="3d")
     ax.set_zlim(-1, 1)
     x, y = np.meshgrid(
-        np.linspace(0, a, matrix.shape[0], endpoint=True),
-        np.linspace(0, b, matrix.shape[1], endpoint=True),
+        np.linspace(0, a, u_numeric.shape[0], endpoint=True),
+        np.linspace(0, b, u_numeric.shape[1], endpoint=True),
     )
-    ax.plot_surface(x, y, matrix, cmap="inferno", rstride=1, cstride=1)
+    ax.plot_surface(x, y, u_numeric, cmap="inferno", rstride=1, cstride=1)
     plt.show()
     return 0
 
 
+ht = 0.1
+hx = 0.1
+hy = 0.1
+a = 2
+b = 2
+n = 10
+
+fps = int(1 / ht)
+frn = int(pi * 2 * fps)
+
 x = np.linspace(0, a, n + 1, endpoint=True)
 y = np.linspace(0, b, n + 1, endpoint=True)
 x, y = np.meshgrid(x, y)
-h_x = a / n
-h_y = b / n
-matrix = np.zeros((t_steps, n + 1, n + 1))
-
+hx = a / n
+hy = b / n
+u0 = np.zeros((frn, n + 1, n + 1))
 for i in range(1, n):
     for j in range(1, n):
-        matrix[0][i][j] = phi(j * h_x, i * h_y)
-        matrix[1][i][j] = h_t * psi(j * h_x, i * h_y) + matrix[0][i][j]
+        u0[0][i][j] = phi(j * hx, i * hy)
+        u0[1][i][j] = ht * psi(j * hx, i * hy) + u0[0][i][j]
 
-print(matrix[0])
-print()
-
-print(matrix[1])
-print()
-
-for k in range(2, t_steps):
-    matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k)
-    # show_plot(matrix[k])
+for k in range(2, frn):
+    u0[k] = scheme(u0[k - 2], u0[k - 1], f, k)
+    show_plot(u0[k])
