@@ -1,3 +1,7 @@
+import numpy as np
+from numpy import sin, pi
+import matplotlib.pyplot as plt
+
 def f(x, y, t):
     #return np.sin(np.pi * x / 2) * np.sin(np.pi * y) * np.cos(2 * t) * (-4 + 5 / 4 * np.pi ** 2)
     # return 0

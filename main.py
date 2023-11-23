@@ -64,9 +64,9 @@ def next_layer(k: int, matrix):
 
 
 for i in range(1, x_steps):
-    for j in range(1, y_steps):
-        next_matrix[i, j, 0] = phi(h_x * i, h_y * j)
-        next_matrix[i, j, 1] = next_matrix[i, j, 0] + psi(h_x * i, h_y * j) * h_t
+    for j in range(1, y_steps + 1):
+        next_matrix[i, j, 0] = phi(h_x * j, h_y * i)
+        next_matrix[i, j, 1] = next_matrix[i, j, 0] + psi(h_x * j, h_y * i) * h_t
 
 print(next_matrix[:, :, 0])
 print()
