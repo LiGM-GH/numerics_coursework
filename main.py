@@ -3,20 +3,25 @@ from numpy import sin, pi
 
 l = 1.0
 
+
 def y(t):
     global l
     return sin(pi * t / l)
 
+
 def f(x, y, t):
     global l
-    return pi * pi / l / l *  sin(pi * x / l) * sin(pi * t / l)
+    return pi * pi / l / l * sin(pi * x / l) * sin(pi * t / l) * sin(pi * y / l)
+
 
 def phi(x, y):
     return 0
 
+
 def psi(x, y):
     global l
-    return np.sin(np.pi * x / l) * np.sin(pi * y / l)
+    return pi / l * sin(pi * x / l) * sin(pi * y / l)
+
 
 x_steps = 10
 y_steps = 10
@@ -24,7 +29,7 @@ t_steps = 10
 
 a = 1.0
 b = 1.0
-T = 5.0
+T = pi/2.0
 
 x_end = a
 x_start = 0.0
@@ -37,11 +42,40 @@ h_x = (x_end - x_start) / x_steps
 h_y = (y_end - y_start) / y_steps
 h_t = (t_end - t_start) / t_steps
 
-matrix = np.full((x_steps + 1, y_steps + 1), 0.0)
-next_matrix = np.full((x_steps + 1, y_steps + 1), 0.0)
+matrix = np.full((x_steps + 1, y_steps + 1, t_steps + 1), 0.0)
+next_matrix = np.full((x_steps + 1, y_steps + 1, t_steps + 1), 0.0)
+
+C1 = h_x**2 * h_y**2
+C2 = -(h_y**2) * h_t**2
+C3 = -(h_y**2) * h_t**2
+C4 = h_x**2 * h_y**2 * h_t**2
+C0 = -2 * (C1 + C2 + C3)
+
+
+def next_layer(k: int, matrix):
+    for i in range(1, x_steps):
+        for j in range(1, y_steps):
+            matrix[i, j, k + 1] = -matrix[i, j, k - 1] - 1 / C1 * (
+                C0 * matrix[i, j, k]
+                + C2 * (matrix[i + 1, j, k] + matrix[i - 1, j, k])
+                + C3 * (matrix[i, j + 1, k] + matrix[i, j - 1, k])
+                - C4 * f(j * h_x, i * h_y, k * h_t)
+            )
+            # print(f"matrix[{i=}, {j=}, {k+1=}] = {matrix[i, j, k + 1]}")
+
 
 for i in range(0, x_steps + 1):
-    for j in range(0, y_steps + 1):
-        matrix[i, j] = phi(h_x * i, h_y * j)
-        next_matrix[i, j] = matrix[i, j] + psi(h_x * i, h_y * j) * h_t
-print(next_matrix)
+    for j in range(1, y_steps + 1):
+        next_matrix[i, j, 0] = phi(h_x * i, h_y * j)
+        next_matrix[i, j, 1] = next_matrix[i, j, 0] + psi(h_x * i, h_y * j) * h_t
+
+print(next_matrix[:, :, 0])
+print()
+
+print(next_matrix[:, :, 1])
+print()
+
+for i in range(1, t_steps):
+    next_layer(i, next_matrix)
+    print(next_matrix[:, :, i + 1])
+print(next_matrix[:, :, t_steps])

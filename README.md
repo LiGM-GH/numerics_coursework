@@ -10,7 +10,7 @@ $$u|Г = 0, t >= 0$$
 
 Let test problem be the following:
 ```math
-f(x, y, t) = sin(x)*sin(y)*sin(t)
-φ(x, y) = 0
-ψ = sin(x)*sin(y)
+f(x, y, t) = sin(x * π / l)*sin(y * π / l)
+ψ(x, y) = 0
+φ = sin(x)*sin(y)
 ```
