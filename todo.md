@@ -1,3 +1,3 @@
 - Tolerance
-- Test case #2, border = 0
+- Test case #2, border = 0 (probably |x|*|y|*sin(t))
 - Runge
