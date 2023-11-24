@@ -2,8 +2,11 @@ import numpy as np
 from numpy import sin, pi
 import matplotlib.pyplot as plt
 
+l = 1.0
+
 
 def f(x, y, t):
+    return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l)
     return -sin(t)
 
 
@@ -12,6 +15,7 @@ def phi(x, y):
 
 
 def psi(x, y):
+    return pi / l * sin(pi * x / l) * sin(pi * y / l)
     return 1
 
 
