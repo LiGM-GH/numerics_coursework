@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 l = 1.0
 
+def real_y(x, y, t):
+    return sin(x * pi / l) * sin(y * pi / l) * sin(t * pi / l)
 
 def f(x, y, t):
     return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l)
@@ -16,10 +18,10 @@ def phi(x, y):
 
 def psi(x, y):
     return pi / l * sin(pi * x / l) * sin(pi * y / l)
-    return 1
+    return 1.0
 
 
-def method_step(prev_matrix, curr_matrix, f, k):
+def method_step(prev_matrix, curr_matrix, f, k, deltas_matrix):
     C1 = hx**2 * hy**2
     C2 = -(ht**2) * hy**2
     C3 = -(ht**2) * hx**2
@@ -38,7 +40,22 @@ def method_step(prev_matrix, curr_matrix, f, k):
                 )
                 / C1
             )
+
+            deltas_matrix[i][j] = abs(next_matrix[i][j] - real_y(j * hx, i * hy, (k - 1) * ht))
     return next_matrix
+
+
+def show_deltas(deltas_to_show):
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+    # ax.set_zlim(-1, 1)
+    x, y = np.meshgrid(
+        np.linspace(0, a, deltas_to_show.shape[0], endpoint=True),
+        np.linspace(0, b, deltas_to_show.shape[1], endpoint=True),
+    )
+    ax.plot_surface(x, y, deltas_to_show, cmap="inferno", rstride=1, cstride=1)
+    plt.show()
+    return 0
 
 
 def show_plot(matrix_to_show):
@@ -70,13 +87,21 @@ x, y = np.meshgrid(x, y)
 hx = a / n
 hy = b / n
 matrix = np.zeros((t_steps, n + 1, n + 1))
+deltas = np.zeros((t_steps, n + 1, n + 1))
 for i in range(1, n):
     for j in range(1, n):
         matrix[0][i][j] = phi(j * hx, i * hy)
         matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
 show_plot(matrix[0])
-show_plot(matrix[1])
+# show_plot(matrix[1])
 
 for k in range(2, t_steps):
-    matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k)
-    show_plot(matrix[k])
+    matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k, deltas[k])
+    # show_plot(matrix[k])
+show_plot(matrix[t_steps - 1])
+
+for i, matr in enumerate(deltas):
+    print()
+    print(f"{i}=====================================")
+    for j, line in enumerate(matr):
+        print(f"{j}:\t{line}")
