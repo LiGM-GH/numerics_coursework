@@ -9,7 +9,6 @@ def real_y(x, y, t):
 
 def f(x, y, t):
     return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l)
-    return -sin(t)
 
 
 def phi(x, y):
@@ -18,7 +17,6 @@ def phi(x, y):
 
 def psi(x, y):
     return pi / l * sin(pi * x / l) * sin(pi * y / l)
-    return 1.0
 
 
 def method_step(prev_matrix, curr_matrix, f, k, deltas_matrix):
@@ -100,8 +98,11 @@ for k in range(2, t_steps):
     # show_plot(matrix[k])
 show_plot(matrix[t_steps - 1])
 
-for i, matr in enumerate(deltas):
-    print()
-    print(f"{i}=====================================")
-    for j, line in enumerate(matr):
-        print(f"{j}:\t{line}")
+for k in range(2, t_steps):
+    show_deltas(deltas[k])
+
+# for i, matr in enumerate(deltas):
+#     print()
+#     print(f"{i}=====================================")
+#     for j, line in enumerate(matr):
+#         print(f"{j}:\t{line}")
