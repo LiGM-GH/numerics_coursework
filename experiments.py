@@ -8,7 +8,7 @@ def real_y(x, y, t):
     return sin(x * pi / l) * sin(y * pi / l) * sin(t * pi / l)
 
 def f(x, y, t):
-    return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l)
+    return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l) * sin(pi * t / l)
 
 
 def phi(x, y):
@@ -56,9 +56,10 @@ def show_deltas(deltas_to_show):
     return 0
 
 
-def show_plot(matrix_to_show):
+def show_plot(matrix_to_show, i):
     fig = plt.figure()
     ax = fig.add_subplot(projection="3d")
+    ax.set_title(ht * i)
     ax.set_zlim(-1, 1)
     x, y = np.meshgrid(
         np.linspace(0, a, matrix_to_show.shape[0], endpoint=True),
@@ -69,9 +70,9 @@ def show_plot(matrix_to_show):
     return 0
 
 
-ht = 0.1
-hx = 0.1
-hy = 0.1
+ht = 0.001
+hx = 0.001
+hy = 0.001
 a = 2
 b = 2
 n = 10
@@ -90,19 +91,18 @@ for i in range(1, n):
     for j in range(1, n):
         matrix[0][i][j] = phi(j * hx, i * hy)
         matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
-show_plot(matrix[0])
-# show_plot(matrix[1])
+show_plot(matrix[0], 0)
+show_plot(matrix[1], ht)
 
 for k in range(2, t_steps):
     matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k, deltas[k])
-    # show_plot(matrix[k])
-show_plot(matrix[t_steps - 1])
+    # show_plot(matrix[k], k)
 
-for k in range(2, t_steps):
-    show_deltas(deltas[k])
+# for k in range(2, t_steps):
+#     show_deltas(deltas[k])
 
-# for i, matr in enumerate(deltas):
-#     print()
-#     print(f"{i}=====================================")
-#     for j, line in enumerate(matr):
-#         print(f"{j}:\t{line}")
+for i, matr in enumerate(deltas):
+    print()
+    print(f"{i}=====================================")
+    for j, line in enumerate(matr):
+        print(f"{j}:\t{line}")
