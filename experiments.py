@@ -1,25 +1,10 @@
 import numpy as np
-from numpy import sin, pi
+from numpy import pi
 import matplotlib.pyplot as plt
-
-l = 1.0
-
-def real_y(x, y, t):
-    return sin(x * pi / l) * sin(y * pi / l) * sin(t * pi / l)
-
-def f(x, y, t):
-    return pi * pi / l / l * sin(pi * x / l) * sin(pi * y / l) * sin(pi * t / l)
+from typing import Callable
 
 
-def phi(x, y):
-    return 0
-
-
-def psi(x, y):
-    return pi / l * sin(pi * x / l) * sin(pi * y / l)
-
-
-def method_step(prev_matrix, curr_matrix, f, k, deltas_matrix):
+def method_step(*, prev_matrix, curr_matrix, f, k, deltas_matrix, hx, hy, ht, real_y):
     C1 = hx**2 * hy**2
     C2 = -(ht**2) * hy**2
     C3 = -(ht**2) * hx**2
@@ -39,11 +24,13 @@ def method_step(prev_matrix, curr_matrix, f, k, deltas_matrix):
                 / C1
             )
 
-            deltas_matrix[i][j] = abs(next_matrix[i][j] - real_y(j * hx, i * hy, (k - 1) * ht))
+            deltas_matrix[i][j] = abs(
+                next_matrix[i][j] - real_y(j * hx, i * hy, (k - 1) * ht)
+            )
     return next_matrix
 
 
-def show_deltas(deltas_to_show):
+def show_deltas(*, deltas_to_show, a, b):
     fig = plt.figure()
     ax = fig.add_subplot(projection="3d")
     # ax.set_zlim(-1, 1)
@@ -56,7 +43,7 @@ def show_deltas(deltas_to_show):
     return 0
 
 
-def show_plot(matrix_to_show, i):
+def show_plot(*, matrix_to_show, i, a, b, ht):
     fig = plt.figure()
     ax = fig.add_subplot(projection="3d")
     ax.set_title(ht * i)
@@ -70,39 +57,55 @@ def show_plot(matrix_to_show, i):
     return 0
 
 
-ht = 0.001
-hx = 0.001
-hy = 0.001
-a = 2
-b = 2
-n = 10
+def main(
+    *,
+    a: float,
+    b: float,
+    hx: float,
+    hy: float,
+    ht: float,
+    n: int,
+    real_y: Callable[[float, float, float], float],
+    f: Callable[[float, float, float], float],
+    phi: Callable[[float, float], float],
+    psi: Callable[[float, float], float],
+):
+    fps = int(1 / ht)
+    t_steps = int(pi * 2 * fps)
 
-fps = int(1 / ht)
-t_steps = int(pi * 2 * fps)
+    x = np.linspace(0, a, n + 1, endpoint=True)
+    y = np.linspace(0, b, n + 1, endpoint=True)
+    x, y = np.meshgrid(x, y)
+    hx = a / n
+    hy = b / n
+    matrix = np.zeros((t_steps, n + 1, n + 1))
+    deltas = np.zeros((t_steps, n + 1, n + 1))
+    for i in range(1, n):
+        for j in range(1, n):
+            matrix[0][i][j] = phi(j * hx, i * hy)
+            matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
+    show_plot(matrix_to_show=matrix[0], ht=0, a=a, b=b, i=0)
+    show_plot(matrix_to_show=matrix[1], ht=ht, a=a, b=b, i=1)
 
-x = np.linspace(0, a, n + 1, endpoint=True)
-y = np.linspace(0, b, n + 1, endpoint=True)
-x, y = np.meshgrid(x, y)
-hx = a / n
-hy = b / n
-matrix = np.zeros((t_steps, n + 1, n + 1))
-deltas = np.zeros((t_steps, n + 1, n + 1))
-for i in range(1, n):
-    for j in range(1, n):
-        matrix[0][i][j] = phi(j * hx, i * hy)
-        matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
-show_plot(matrix[0], 0)
-show_plot(matrix[1], ht)
+    for k in range(2, t_steps):
+        matrix[k] = method_step(
+            prev_matrix=matrix[k - 2],
+            curr_matrix=matrix[k - 1],
+            f=f,
+            k=k,
+            deltas_matrix=deltas[k],
+            hx=hx,
+            hy=hy,
+            ht=ht,
+            real_y=real_y,
+        )
+        # show_plot(matrix[k], k)
 
-for k in range(2, t_steps):
-    matrix[k] = method_step(matrix[k - 2], matrix[k - 1], f, k, deltas[k])
-    # show_plot(matrix[k], k)
+    # for k in range(2, t_steps):
+    #     show_deltas(deltas[k])
 
-# for k in range(2, t_steps):
-#     show_deltas(deltas[k])
-
-for i, matr in enumerate(deltas):
-    print()
-    print(f"{i}=====================================")
-    for j, line in enumerate(matr):
-        print(f"{j}:\t{line}")
+    for i, matr in enumerate(deltas):
+        print()
+        print(f"{i}=====================================")
+        for j, line in enumerate(matr):
+            print(f"{j}:\t{line}")
