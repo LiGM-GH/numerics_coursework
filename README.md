@@ -17,7 +17,9 @@ f(x, y, t) = sin(x * π / l)*sin(y * π / l)*sin(t * π / l)
 
 Let another test problem be the following:
 ```math
-u(x, y, t) = |x|*|y| * sin(t)
+u(x, y, t) = (|x-a/2|*|y-a/2|) * sin(t)
 φ = 0
-ψ = -|x|*|y|
+ψ = -|x-a/2|*|y-a/2|
+f = -|x-a/2|*|y-a/2|sin(t)
+a = b
 ```
