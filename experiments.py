@@ -61,8 +61,6 @@ def main(
     *,
     a: float,
     b: float,
-    hx: float,
-    hy: float,
     ht: float,
     n: int,
     real_y: Callable[[float, float, float], float],
@@ -84,8 +82,8 @@ def main(
         for j in range(1, n):
             matrix[0][i][j] = phi(j * hx, i * hy)
             matrix[1][i][j] = ht * psi(j * hx, i * hy) + matrix[0][i][j]
-    show_plot(matrix_to_show=matrix[0], ht=0, a=a, b=b, i=0)
-    show_plot(matrix_to_show=matrix[1], ht=ht, a=a, b=b, i=1)
+    # show_plot(matrix_to_show=matrix[0], ht=0, a=a, b=b, i=0)
+    # show_plot(matrix_to_show=matrix[1], ht=ht, a=a, b=b, i=1)
 
     for k in range(2, t_steps):
         matrix[k] = method_step(
@@ -99,13 +97,14 @@ def main(
             ht=ht,
             real_y=real_y,
         )
-        # show_plot(matrix[k], k)
+        # show_plot(matrix_to_show=matrix[k], i=k, ht=ht, a=a, b=b)
 
     # for k in range(2, t_steps):
     #     show_deltas(deltas[k])
 
-    for i, matr in enumerate(deltas):
-        print()
-        print(f"{i}=====================================")
-        for j, line in enumerate(matr):
-            print(f"{j}:\t{line}")
+    # for i, matr in enumerate(deltas):
+    #     print()
+    #     print(f"{i}=====================================")
+    #     for j, line in enumerate(matr):
+    #         print(f"{j}:\t{line}")
+    return matrix, deltas
