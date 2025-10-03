@@ -7,18 +7,22 @@ $$u|Г = 0, t >= 0$$
 
 Let test problem be the following:
 ```math
-f(x, y, t) = sin(x * π / l)*sin(y * π / l)*sin(t * π / l)
-ψ(x, y) = 0
+\begin{align}
+f(x, y, t) = sin(x * π / l)*sin(y * π / l)*sin(t * π / l) \\
+ψ(x, y) = 0 \\
 φ = sin(x)*sin(y)
+\end{align}
 ```
 
 Let another test problem be the following:
 ```math
-u(x, y, t) = (|x-a/2|*|y-a/2|) * sin(t)
-φ = 0
-ψ = -|x-a/2|*|y-a/2|
-f = -|x-a/2|*|y-a/2|sin(t)
+\begin{align}
+u(x, y, t) = (|x-a/2|*|y-a/2|) * sin(t) \\
+φ = 0 \\
+ψ = -|x-a/2|*|y-a/2| \\
+f = -|x-a/2|*|y-a/2|sin(t) \\
 a = b
+\end{align}
 ```
 
 # How to run
