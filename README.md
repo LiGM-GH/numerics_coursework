@@ -23,3 +23,8 @@ u(x, y, t) = (|x-a/2|*|y-a/2|) * sin(t)
 f = -|x-a/2|*|y-a/2|sin(t)
 a = b
 ```
+
+# How to run
+```
+$ ./run.sh
+```
